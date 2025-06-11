@@ -38,10 +38,10 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <a href="login.php" class="bg-green-600 text-white px-6 py-3 rounded-lg text-lg shadow hover:bg-green-700 transition">
+          <a href="loginregister.php" class="bg-green-600 text-white px-6 py-3 rounded-lg text-lg shadow hover:bg-green-700 transition">
             Login
           </a>
-          <a href="register.php" class="bg-white text-green-600 border border-green-600 px-6 py-3 rounded-lg text-lg shadow hover:bg-gray-100 transition">
+          <a href="loginregister.php" class="bg-white text-green-600 border border-green-600 px-6 py-3 rounded-lg text-lg shadow hover:bg-gray-100 transition">
             Register
           </a>
         </div>

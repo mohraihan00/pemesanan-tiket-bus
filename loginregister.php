@@ -1,3 +1,71 @@
+<?php
+session_start();
+
+// Koneksi ke MySQL XAMPP
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "terminal_bus"; // ganti sesuai nama database kamu
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) die("Koneksi gagal: " . $conn->connect_error);
+
+// Handle Login
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form-type']) && $_POST['form-type'] === 'login') {
+  $username = $_POST['login-identifier'];
+  $password = $_POST['login-password'];
+
+  $stmt = $conn->prepare("SELECT id_user, password_user FROM user WHERE username_user = ?");
+  $stmt->bind_param("s", $username);
+  $stmt->execute();
+  $stmt->store_result();
+
+  if ($stmt->num_rows > 0) {
+    $stmt->bind_result($id, $hash);
+    $stmt->fetch();
+    if (password_verify($password, $hash)) {
+      $_SESSION['login'] = true;
+      $_SESSION['username'] = $username;
+      header("Location: dashboard.php");
+      exit;
+    } else {
+      $login_error = "Password salah!";
+    }
+  } else {
+    $login_error = "Akun tidak ditemukan!";
+  }
+}
+
+// Handle Register
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form-type']) && $_POST['form-type'] === 'register') {
+  $username = $_POST['register-email-phone'];
+  $password = $_POST['register-password'];
+  $confirm = $_POST['register-password-confirm'];
+
+  if ($password !== $confirm) {
+    $register_error = "Password tidak cocok!";
+  } else {
+    $cek = $conn->prepare("SELECT id_user FROM user WHERE username_user = ?");
+    $cek->bind_param("s", $username);
+    $cek->execute();
+    $cek->store_result();
+    if ($cek->num_rows > 0) {
+      $register_error = "Username sudah digunakan!";
+    } else {
+      $hashed = password_hash($password, PASSWORD_DEFAULT);
+      $insert = $conn->prepare("INSERT INTO user (username_user, password_user) VALUES (?, ?)");
+      $insert->bind_param("ss", $username, $hashed);
+      if ($insert->execute()) {
+        $register_success = "Registrasi berhasil! Silakan login.";
+      } else {
+        $register_error = "Gagal registrasi.";
+      }
+    }
+  }
+}
+?>
+
+
+
 <?php /* login.php */ ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,8 +78,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
   :root {
-    --color-light-green: #a8d5ba;
-    --color-green: #4caf50;
+    --color-light-green:rgb(255, 255, 255);
+    --color-green:rgb(175, 220, 177);
     --color-green-dark: #388e3c;
     --color-white: #fff;
     --color-gray-light: #f5f5f5;
@@ -207,14 +275,17 @@
     </nav>
 
     <!-- Login Form -->
-    <form id="panel-login" role="tabpanel" aria-labelledby="tab-login" class="active" novalidate>
-      <label for="login-identifier">Email or Phone Number</label>
-      <input type="text" id="login-identifier" name="login-identifier" inputmode="email" placeholder="Email or phone number" required autocomplete="username" />
-      
+    <form id="panel-login" role="tabpanel" aria-labelledby="tab-login" class="active" method="POST" novalidate>
+      <?php if (!empty($login_error)): ?><p style="color:red;text-align:center;"><?= $login_error ?></p><?php endif; ?>
+      <input type="hidden" name="form-type" value="login" />
+      <label for="login-identifier">Username</label>
+      <input type="text" id="login-identifier" name="login-identifier" placeholder="Username" required />
+
       <label for="login-password">Password</label>
-      <input type="password" id="login-password" name="login-password" placeholder="Password" required autocomplete="current-password" minlength="6" />
+      <input type="password" id="login-password" name="login-password" placeholder="Password" required minlength="6" />
 
       <button type="submit" class="submit-btn">Login</button>
+
 
       <button type="button" class="google-btn" aria-label="Continue with Google">
         <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -233,17 +304,21 @@
     </form>
 
     <!-- Register Form -->
-    <form id="panel-register" role="tabpanel" aria-labelledby="tab-register" novalidate>
-      <label for="register-email-phone">Email or Phone Number</label>
-      <input type="text" id="register-email-phone" name="register-email-phone" inputmode="email" placeholder="Email or phone number" required autocomplete="username" />
+    <form id="panel-register" role="tabpanel" aria-labelledby="tab-register" method="POST" novalidate>
+      <?php if (!empty($register_error)): ?><p style="color:red;text-align:center;"><?= $register_error ?></p><?php endif; ?>
+      <?php if (!empty($register_success)): ?><p style="color:green;text-align:center;"><?= $register_success ?></p><?php endif; ?>
+      <input type="hidden" name="form-type" value="register" />
+      <label for="register-email-phone">Username</label>
+      <input type="text" id="register-email-phone" name="register-email-phone" placeholder="Username" required />
 
       <label for="register-password">Password</label>
-      <input type="password" id="register-password" name="register-password" placeholder="Password (min 6 characters)" required minlength="6" autocomplete="new-password" />
+      <input type="password" id="register-password" name="register-password" placeholder="Password (min 6 characters)" required minlength="6" />
 
       <label for="register-password-confirm">Confirm Password</label>
-      <input type="password" id="register-password-confirm" name="register-password-confirm" placeholder="Confirm Password" required minlength="6" autocomplete="new-password" />
-      
+      <input type="password" id="register-password-confirm" name="register-password-confirm" placeholder="Confirm Password" required minlength="6" />
+
       <button type="submit" class="submit-btn">Register</button>
+
 
       <button type="button" class="google-btn" aria-label="Continue with Google">
         <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -308,30 +383,20 @@
       tabLogin.focus();
     });
 
-    // Simple form validation
-    function validateEmailOrPhone(value) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const phoneRegex = /^\+?\d{7,15}$/;
-      return emailRegex.test(value) || phoneRegex.test(value);
-    }
-
     // Login form validation & submission simulation
     panelLogin.addEventListener('submit', (e) => {
       e.preventDefault();
       const identifier = document.getElementById('login-identifier').value.trim();
       const password = document.getElementById('login-password').value;
 
-      if (!validateEmailOrPhone(identifier)) {
-        alert('Please enter a valid email or phone number.');
-        return;
-      }
       if (password.length < 6) {
-        alert('Password must be at least 6 characters.');
+        alert('Password setidaknya terdiri dari 6 karakter.');
         return;
       }
 
-      alert('Login successful (demo)! You entered: ' + identifier);
+      alert('Login berhasil! Kamu masuk sebagai: ' + identifier);
       panelLogin.reset();
+      window.location.href = "beranda.php";
     });
 
     // Register form validation & submission simulation
@@ -341,12 +406,8 @@
       const password = document.getElementById('register-password').value;
       const confirmPassword = document.getElementById('register-password-confirm').value;
 
-      if (!validateEmailOrPhone(identifier)) {
-        alert('Please enter a valid email or phone number.');
-        return;
-      }
       if (password.length < 6) {
-        alert('Password must be at least 6 characters.');
+        alert('Password setidaknya terdiri dari 6 karakter.');
         return;
       }
       if (password !== confirmPassword) {
@@ -356,12 +417,13 @@
 
       alert('Registration successful (demo)! You entered: ' + identifier);
       panelRegister.reset();
+      window.location.href = "beranda.php";
     });
 
     // Google button click demo
     document.querySelectorAll('.google-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        alert('Google sign-in is not implemented in this demo.');
+        alert('Google belum diintegrasikan.');
       });
     });
 

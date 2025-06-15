@@ -4,8 +4,8 @@
     <!-- Brand & Sosmed -->
     <div class="flex flex-col gap-4 md:w-1/3">
       <div class="flex items-center gap-3">
-        <img src="./images/logo_gobus.png" alt="Logo" class="w-[180px]" />
-        <p class="text-lg font-semibold text-gray-800">GoBus</p>
+        <img src="./images/logo-bus.png" alt="Logo" class="w-[180px]" />
+        <p class="text-lg font-semibold text-gray-800">Siger-Bus</p>
       </div>
       <div class="flex space-x-4">
         <a href="#"><i class="fab fa-instagram text-2xl"></i></a>
@@ -19,7 +19,9 @@
       <h4 class="text-sm font-semibold uppercase text-gray-700 mb-3">Global Coverage</h4>
       <ul class="space-y-2 text-sm text-gray-600">
         <li><a href="#" class="hover:text-green-700">Semua Rute</a></li>
+
         <li><a href="#" class="hover:text-green-700">Ssemua Stasiun</a></li>
+        <li><a href="#" class="hover:text-green-700">Semua Stasiun</a></li>
         <li><a href="#" class="hover:text-green-700">Semua Kota dengan Rute</a></li>
         <li><a href="#" class="hover:text-green-700">Kota Tersedia</a></li>
         <li><a href="#" class="hover:text-green-700">Perusahaan</a></li>
@@ -41,6 +43,8 @@
 
   <div class="bg-green-100 text-center py-4 text-sm text-gray-700">
     <p>&copy; <?= date('Y') ?> GoBus. All rights reserved.</p>
+    <p>&copy; <?= date('Y') ?> Siger-Bus. All rights reserved.</p>
+>>>>>>> d607fa6 (initial commit saif)
     <div class="mt-2 space-x-4">
       <a href="#" class="hover:text-green-700">Terms</a>
       <span>•</span>

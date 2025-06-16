@@ -82,7 +82,7 @@
   </section>
 
   <!-- Section Promo -->
-  <section class="py-12 px-4 bg-gradient-to-b from-green-100 to-white fade-in-up">
+  <section class="py-12 px-4 bg-gradient-to-b from-green-100 to-green-50 fade-in-up">
     <div class="max-w-6xl mx-auto">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-green-800">Penawaran Menarik</h2>

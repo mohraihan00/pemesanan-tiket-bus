@@ -3,8 +3,8 @@
   <div class="container mx-auto px-4 flex justify-between items-center h-[80px]">
     <!-- Logo -->
     <div class="flex items-center gap-3">
-      <img src="./images/logo_gobus.png" alt="Logo Gobus" class="w-[110px] h-auto" />
-      <span class="text-xl font-bold text-gray-800">gobus</span>
+      <img src="./images/logo-bus.png" alt="Logo Siger-Bus" class="w-[110px] h-auto" />
+      <span class="text-xl font-bold text-gray-800">Siger-Bus</span>
     </div>
 
     <!-- Desktop Menu -->

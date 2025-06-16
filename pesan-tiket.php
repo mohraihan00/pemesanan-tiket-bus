@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <?php include_once "components/header.php"; ?>
     <div class="container">
         <h1>Selamat Datang di Go-Bus</h1>
         <p>Pesan tiket bus dengan mudah, cepat, dan aman ke seluruh Indonesia!</p>
@@ -23,7 +24,9 @@
             <label for="date">Tanggal Berangkat:</label>
             <input type="date" id="date" name="date" required>
 
+            <a href="cari-bus.php">
             <button type="submit">Cari Bus</button>
+            </a>
         </form>
     </div>
 

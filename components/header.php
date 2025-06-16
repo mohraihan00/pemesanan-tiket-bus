@@ -10,9 +10,9 @@
     <!-- Desktop Menu -->
     <nav class="hidden md:flex space-x-6">
       <a href="./pesan-tiket.php" class="text-gray-700 font-medium hover:text-green-700">Pesan Tiket</a>
-      <a href="./riwayat.php" class="text-gray-700 font-medium hover:text-green-700">Riwayat Pemesanan</a>
+      <a href="./riwayat-pemesanan.php" class="text-gray-700 font-medium hover:text-green-700">Riwayat Pemesanan</a>
       <a href="./kontak.php" class="text-gray-700 font-medium hover:text-green-700">Kontak</a>
-      <a href="./logout.php" class="text-red-600 font-medium hover:underline">Log Out</a>
+      <a href="./loginregister.php" class="text-red-600 font-medium hover:underline">Log Out</a>
     </nav>
 
     <!-- Mobile Menu Button -->
@@ -28,9 +28,9 @@
   <div id="mobile-menu" class="hidden md:hidden absolute top-[80px] left-0 w-full bg-white shadow-md">
     <ul class="flex flex-col px-6 py-4 space-y-4">
       <li><a href="./pesan-tiket.php" class="text-gray-700 hover:text-green-700">Pesan Tiket</a></li>
-      <li><a href="./riwayat.php" class="text-gray-700 hover:text-green-700">Riwayat Pemesanan</a></li>
+      <li><a href="./riwayat-pemesanan.php" class="text-gray-700 hover:text-green-700">Riwayat Pemesanan</a></li>
       <li><a href="./kontak.php" class="text-gray-700 hover:text-green-700">Kontak</a></li>
-      <li><a href="./logout.php" class="text-red-600 hover:underline font-medium">Log Out</a></li>
+      <li><a href="./loginregister.php" class="text-red-600 hover:underline font-medium">Log Out</a></li>
     </ul>
   </div>
 

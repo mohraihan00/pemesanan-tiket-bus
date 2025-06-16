@@ -31,7 +31,7 @@
         <p class="text-lg text-gray-600 mb-6">
           Pesan tiket bus dengan mudah, cepat, dan aman ke seluruh Indonesia!
         </p>
-        <a href="pemesan-tiket.php" class="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 transition">
+        <a href="pesan-tiket.php" class="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 transition">
           Pesan Tiket Sekarang
         </a>
       </div>
@@ -65,10 +65,12 @@
           </div>
         </div>
         <div class="text-center mt-8">
+          <a href="cari-bus.php">
           <button type="submit"
                   class="bg-green-600 text-white px-8 py-3 rounded-lg shadow hover:bg-green-700 transition">
             Cari Bus
           </button>
+  </a>
         </div>
       </form>
     </div>

@@ -96,7 +96,7 @@
                 Data Bus
             </a>
             
-            <a href="#" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200" onclick="showTransaksi()">
+            <a href="./admin-transaksi.php" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200" onclick="showTransaksi()">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2m0-8h2a2 2 0 012 2v6a2 2 0 01-2 2H9m0-8v8"></path>
                 </svg>
@@ -660,20 +660,6 @@
                 }
             });
         });
-
-        // Navigation functions (placeholder)
-        function showDashboard() {
-            alert('Navigate to Dashboard');
-        }
-
-        function showDataBus() {
-            // Already on this page
-            console.log('Already on Data Bus page');
-        }
-
-        function showTransaksi() {
-            alert('Navigate to Transaksi');
-        }
     </script>
     <?php?>
 </body>

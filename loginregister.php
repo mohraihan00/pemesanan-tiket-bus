@@ -10,30 +10,41 @@ $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) die("Koneksi gagal: " . $conn->connect_error);
 
 // Handle Login
+// Handle Login
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form-type']) && $_POST['form-type'] === 'login') {
-  $username = $_POST['login-identifier'];
-  $password = $_POST['login-password'];
+    $username = $_POST['login-identifier'];
+    $password = $_POST['login-password'];
 
-  $stmt = $conn->prepare("SELECT id_user, password_user FROM user WHERE username_user = ?");
-  $stmt->bind_param("s", $username);
-  $stmt->execute();
-  $stmt->store_result();
-
-  if ($stmt->num_rows > 0) {
-    $stmt->bind_result($id, $hash);
-    $stmt->fetch();
-    if (password_verify($password, $hash)) {
-      $_SESSION['login'] = true;
-      $_SESSION['username'] = $username;
-      header("Location: dashboard.php");
-      exit;
-    } else {
-      $login_error = "Password salah!";
+    // Cek jika admin login
+    if ($username === "adminbus" && $password === "admin123") {
+        $_SESSION['login'] = true;
+        $_SESSION['username'] = $username;
+        header("Location: admin-bus.php");
+        exit;
     }
-  } else {
-    $login_error = "Akun tidak ditemukan!";
-  }
+
+    // Jika bukan admin, cek ke database
+    $stmt = $conn->prepare("SELECT id_user, password_user FROM user WHERE username_user = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($id, $hash);
+        $stmt->fetch();
+        if ($password === $hash) {
+            $_SESSION['login'] = true;
+            $_SESSION['username'] = $username;
+            header("Location: beranda.php");
+            exit;
+        } else {
+            $login_error = "Password salah!";
+        }
+    } else {
+        $login_error = "Akun tidak ditemukan!";
+    }
 }
+
 
 // Handle Register
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form-type']) && $_POST['form-type'] === 'register') {
@@ -51,13 +62,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form-type']) && $_POS
     if ($cek->num_rows > 0) {
       $register_error = "Username sudah digunakan!";
     } else {
-      $hashed = password_hash($password, PASSWORD_DEFAULT);
+      // ⛔ Hapus penggunaan password_hash()
       $insert = $conn->prepare("INSERT INTO user (username_user, password_user) VALUES (?, ?)");
-      $insert->bind_param("ss", $username, $hashed);
+      $insert->bind_param("ss", $username, $password); // langsung simpan password tanpa hashing
+
       if ($insert->execute()) {
         $register_success = "Registrasi berhasil! Silakan login.";
       } else {
-        $register_error = "Gagal registrasi.";
+        if (!$insert->execute()) {
+          die("Registrasi gagal: " . $insert->error);
+        }
       }
     }
   }
@@ -383,42 +397,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form-type']) && $_POS
       tabLogin.focus();
     });
 
-    // Login form validation & submission simulation
-    panelLogin.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const identifier = document.getElementById('login-identifier').value.trim();
-      const password = document.getElementById('login-password').value;
 
-      if (password.length < 6) {
-        alert('Password setidaknya terdiri dari 6 karakter.');
-        return;
-      }
 
-      alert('Login berhasil! Kamu masuk sebagai: ' + identifier);
-      panelLogin.reset();
-      window.location.href = "beranda.php";
-    });
-
-    // Register form validation & submission simulation
-    panelRegister.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const identifier = document.getElementById('register-email-phone').value.trim();
-      const password = document.getElementById('register-password').value;
-      const confirmPassword = document.getElementById('register-password-confirm').value;
-
-      if (password.length < 6) {
-        alert('Password setidaknya terdiri dari 6 karakter.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        alert('Passwords do not match.');
-        return;
-      }
-
-      alert('Registration successful (demo)! You entered: ' + identifier);
-      panelRegister.reset();
-      window.location.href = "beranda.php";
-    });
 
     // Google button click demo
     document.querySelectorAll('.google-btn').forEach(btn => {

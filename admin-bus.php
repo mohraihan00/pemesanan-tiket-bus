@@ -100,7 +100,7 @@
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2m0-8h2a2 2 0 012 2v6a2 2 0 01-2 2H9m0-8v8"></path>
                 </svg>
-                Transaksi
+                Data Transaksi
             </a>
         </nav>
     </div>
@@ -293,7 +293,7 @@
                 jam_tiba: "14:00",
                 harga: 250000,
                 fasilitas: "AC, WiFi, Toilet, Snack, Selimut",
-                foto: "https://via.placeholder.com/80x50/4F46E5/FFFFFF?text=Bus+1"
+                foto: "images/sinarjaya.jpg"
             },
             {
                 id: 2,
@@ -304,7 +304,7 @@
                 jam_tiba: "16:30",
                 harga: 180000,
                 fasilitas: "AC, WiFi, Charging Port",
-                foto: "https://via.placeholder.com/80x50/7C3AED/FFFFFF?text=Bus+2"
+                foto: "images/bushandoyo.jpg"
             },
             {
                 id: 3,

@@ -21,8 +21,13 @@
 
   <?php include_once "components/header.php"; ?>
 
-  <section class="py-12 px-6 fade-in-up">
-    <h2 class="text-3xl font-bold text-center text-green-800 mb-10">Hasil Pencarian Bus</h2>
+  <section class="py-28 px-6 fade-in-up">
+    <!-- Perubahan dimulai di sini -->
+    <div class="text-center mb-10">
+      <h2 class="text-4xl font-bold text-green-800 mb-2">Cari Bus</h2>
+      <p class="text-xl text-gray-600 text-lg">Pilih bus yang anda butuhkan</p>
+    </div>
+    <!-- Perubahan berakhir di sini -->
     
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
       <!-- Card 1 -->
@@ -32,7 +37,7 @@
           <h4 class="text-lg font-semibold mb-2">DAMRI - Business 2+2</h4>
           <p class="text-red-600 font-bold mb-1">Rp 234.000</p>
           <p class="text-sm text-gray-600 mb-4">Keberangkatan: Sukarame → Cawang</p>
-          <a href="#" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Pesan Tiket</a>
+          <a href="./detail-pemesanan-tiket.php" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Pesan Tiket</a>
         </div>
       </div>
 

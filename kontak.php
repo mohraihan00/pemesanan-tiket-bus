@@ -25,7 +25,7 @@ $page_title = "Kontak - Siger-Bus";
     <main class="container mx-auto px-4 pt-32 pb-12">
         <!-- Page Title -->
         <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold text-green-800 mb-4">Hubungi Kami</h2>
+            <h2 class="text-4xl font-bold text-green-800 mb-4">Pusat Bantuan</h2>
             <p class="text-gray-600 text-lg">Kami siap membantu Anda 24 jam setiap hari</p>
         </div>
 

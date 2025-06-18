@@ -4,7 +4,7 @@
     <!-- Logo -->
     <div class="flex items-center gap-3">
       <img src="./images/logo-bus.png" alt="Logo Siger-Bus" class="w-[110px] h-auto" />
-      <a href="beranda.php" span class="text-xl font-extrabold text-black-700 drop-shadow-md hover:text-green-600 transition-all duration-300">
+      <a href="beranda.php" span class="text-2xl font-extrabold text-black-700 drop-shadow-md hover:text-green-600 transition-all duration-300">
         SIGER-BUS
       </a>
     </div>

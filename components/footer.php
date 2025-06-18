@@ -40,14 +40,21 @@
     </div>
   </div>
 
-  <div class="bg-green-100 text-center py-4 text-sm text-gray-700">
-    <p>&copy; <?= date('Y') ?> Siger-Bus. All rights reserved.</p>
-    <div class="mt-2 space-x-4">
-      <a href="#" class="hover:text-green-700">Terms</a>
-      <span>•</span>
-      <a href="#" class="hover:text-green-700">Privacy</a>
-      <span>•</span>
-      <a href="#" class="hover:text-green-700">Refund Policy</a>
+  <footer class="bg-green-800 text-white py-12 mt-16">
+    <div class="container mx-auto px-4 text-center">
+
+      <div>
+        <p class="text-green-200 mb-4">&copy; <?= date('Y') ?> Siger-Bus. Semua hak dilindungi.</p>
+      </div>
+
+      <div class="text-green-200 space-x-4 mb-1">
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <span>•</span>
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <span>•</span>
+        <a href="#" class="hover:text-white transition-colors">Refund Policy</a>
+      </div>
+      
+      </div>
     </div>
-  </div>
-</footer>
+  </footer>

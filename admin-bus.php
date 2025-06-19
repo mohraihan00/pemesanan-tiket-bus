@@ -1,3 +1,23 @@
+<?php
+include 'koneksi.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
+    $nama = $_POST['nama_bus'];
+    $kelas = $_POST['kelas'];
+    $kapasitas = $_POST['kapasitas'];
+    $jam1 = $_POST['jam_berangkat'];
+    $jam2 = $_POST['jam_berangkat2'];
+    $harga = $_POST['harga'];
+    $fasilitas = $_POST['fasilitas'];
+    
+    $stmt = $conn->prepare("INSERT INTO bus (nama_bus, kelas, kapasitas, jam_berangkat, jam_berangkat2, harga, fasilitas, foto) VALUES (?, ?, ?, ?, ?, ?, ?, 'default.jpg')");
+    $stmt->bind_param("ssissis", $nama, $kelas, $kapasitas, $jam1, $jam2, $harga, $fasilitas);
+    $stmt->execute();
+    echo "<script>alert('Data ditambahkan!'); window.location.href='admin-bus.php';</script>";
+}
+
+?>
+
+
 <?php?>
 <!DOCTYPE html>
 <html lang="id">
@@ -219,16 +239,17 @@
             </div>
 
             <!-- Modal Body -->
-            <form class="p-6" id="busForm">
+            <form class="p-6" id="busForm" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="id_bus" id="idBus">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Bus *</label>
-                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="namaBus" required>
+                        <input type="text" name="nama_bus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="namaBus" required>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Kelas Bus *</label>
-                        <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kelasBus" required>
+                        <select name="kelas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kelasBus" required>
                             <option value="">Pilih Kelas</option>
                             <option value="Ekonomi">Ekonomi</option>
                             <option value="Bisnis">Bisnis</option>
@@ -238,32 +259,32 @@
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Kapasitas Penumpang *</label>
-                        <input type="number" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kapasitas" required>
+                        <input type="number" name="kapasitas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kapasitas" required>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Berangkat *</label>
-                        <input type="time" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat" required>
+                        <input type="time" name="jam_berangkat" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat" required>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Tiba *</label>
-                        <input type="time" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamTiba" required>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Berangkat2 *</label>
+                        <input type="time" name="jam_berangkat2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat2" required>
                     </div>
                     
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Tiket (Rp) *</label>
-                        <input type="number" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="hargaTiket" required>
+                        <input type="number" name="harga" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="hargaTiket" required>
                     </div>
                     
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Fasilitas</label>
-                        <textarea class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" id="fasilitas" placeholder="AC, WiFi, Toilet, dll..."></textarea>
+                        <textarea name="fasilitas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" id="fasilitas" placeholder="AC, WiFi, Toilet, dll..."></textarea>
                     </div>
                     
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Foto Bus</label>
-                        <input type="file" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="fotoBus" accept="image/*">
+                        <input type="file" name="fotBus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="fotoBus" accept="image/*">
                         <p class="text-xs text-gray-500 mt-1">Upload foto bus (JPG, PNG, max 2MB)</p>
                     </div>
                 </div>
@@ -281,6 +302,18 @@
         </div>
     </div>
 
+    <?php
+    include 'koneksi.php';
+    $result = mysqli_query($conn, "SELECT * FROM bus");
+    $busData = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $busData[] = $row;
+    }
+    ?>
+    <script>
+        let busData = <?= json_encode($busData); ?>;
+    </script>
+
     <script>
         // Data dummy untuk demonstrasi (dalam implementasi nyata akan dari MySQL)
         let busData = [
@@ -290,7 +323,7 @@
                 kelas: "Eksekutif",
                 kapasitas: 45,
                 jam_berangkat: "06:00",
-                jam_tiba: "14:00",
+                jam_berangkat2: "14:00",
                 harga: 250000,
                 fasilitas: "AC, WiFi, Toilet, Snack, Selimut",
                 foto: "images/sinarjaya.jpg"
@@ -301,7 +334,7 @@
                 kelas: "Bisnis",
                 kapasitas: 40,
                 jam_berangkat: "08:30",
-                jam_tiba: "16:30",
+                jam_berangkat2: "16:30",
                 harga: 180000,
                 fasilitas: "AC, WiFi, Charging Port",
                 foto: "images/bushandoyo.jpg"
@@ -312,7 +345,7 @@
                 kelas: "Ekonomi",
                 kapasitas: 50,
                 jam_berangkat: "10:00",
-                jam_tiba: "18:00",
+                jam_berangkat2: "18:00",
                 harga: 120000,
                 fasilitas: "AC, Musik",
                 foto: "https://via.placeholder.com/80x50/059669/FFFFFF?text=Bus+3"
@@ -387,7 +420,7 @@
                         ${bus.kapasitas} orang
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${bus.jam_berangkat} - ${bus.jam_tiba}
+                        ${bus.jam_berangkat} - ${bus.jam_berangkat2}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${formatCurrency(bus.harga)}
@@ -399,13 +432,13 @@
                         <img src="${bus.foto}" alt="${bus.nama_bus}" class="w-16 h-10 object-cover rounded border shadow-sm">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 shadow-sm" onclick="editBus(${bus.id})">
+                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 shadow-sm" onclick="editBus(${bus.id_bus})">
                             <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                             Edit
                         </button>
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 shadow-sm" onclick="deleteBus(${bus.id})">
+                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 shadow-sm" onclick="deleteBus(${bus.id_bus})">
                             <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
@@ -479,7 +512,7 @@
 
         // Edit bus
         function editBus(id) {
-            const bus = busData.find(b => b.id === id);
+            const bus = busData.find(bus => bus.id_bus === id);
             if (bus) {
                 currentEditId = id;
                 const modalTitle = document.getElementById('modalTitle');
@@ -494,7 +527,7 @@
                     'kelasBus': bus.kelas,
                     'kapasitas': bus.kapasitas,
                     'jamBerangkat': bus.jam_berangkat,
-                    'jamTiba': bus.jam_tiba,
+                    'jamBerangkat2': bus.jam_berangkat2,
                     'hargaTiket': bus.harga,
                     'fasilitas': bus.fasilitas
                 };
@@ -511,12 +544,11 @@
 
         // Delete bus
         function deleteBus(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus data bus ini?')) {
-                busData = busData.filter(bus => bus.id !== id);
-                renderTable();
-                alert('Data bus berhasil dihapus!');
+            if (confirm('Yakin ingin hapus data ini?')) {
+                window.location.href = `admin-bus.php?delete=${id}`;
             }
         }
+
 
         // Close modal
         function closeModal() {
@@ -528,7 +560,7 @@
 
         // Validate form
         function validateForm() {
-            const requiredFields = ['namaBus', 'kelasBus', 'kapasitas', 'jamBerangkat', 'jamTiba', 'hargaTiket'];
+            const requiredFields = ['namaBus', 'kelasBus', 'kapasitas', 'jamBerangkat', 'jamBerangkat2', 'hargaTiket'];
             let isValid = true;
             
             requiredFields.forEach(fieldId => {
@@ -566,7 +598,7 @@
                         kelas: document.getElementById('kelasBus').value,
                         kapasitas: parseInt(document.getElementById('kapasitas').value),
                         jam_berangkat: document.getElementById('jamBerangkat').value,
-                        jam_tiba: document.getElementById('jamTiba').value,
+                        jam_berangkat2: document.getElementById('jamBerangkat2').value,
                         harga: parseInt(document.getElementById('hargaTiket').value),
                         fasilitas: document.getElementById('fasilitas').value,
                         foto: "https://via.placeholder.com/80x50/DC2626/FFFFFF?text=Bus+" + Math.floor(Math.random() * 100)
@@ -574,14 +606,14 @@
                     
                     if (currentEditId) {
                         // Update existing data
-                        const index = busData.findIndex(bus => bus.id === currentEditId);
+                        const index = busData.findIndex(bus => bus.id_bus === currentEditId);
                         if (index !== -1) {
                             busData[index] = { ...busData[index], ...formData };
                             alert('Data bus berhasil diupdate!');
                         }
                     } else {
                         // Add new data
-                        const newId = Math.max(...busData.map(bus => bus.id)) + 1;
+                        const newId = Math.max(...busData.map(bus => bus.id_bus)) + 1;
                         busData.push({ id: newId, ...formData });
                         alert('Data bus berhasil ditambahkan!');
                     }

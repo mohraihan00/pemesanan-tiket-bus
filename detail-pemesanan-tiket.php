@@ -29,6 +29,48 @@
       backdrop-filter: blur(10px);
       background: rgba(255, 255, 255, 0.1);
     }
+    @keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-enter {
+  animation: slideInScale 0.4s ease-out forwards;
+}
+
+@keyframes pulse-success {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.pulse-success {
+  animation: pulse-success 2s infinite;
+}
+
+.confetti {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
   </style>
 </head>
 <body class="bg-gradient-to-br from-green-50 via-white to-green-100 min-h-screen">
@@ -266,6 +308,83 @@
     </div>
   </section>
 
+    <!-- SUCCESS MODAL - Tambahkan sebelum tag </body> -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full transform scale-95 transition-all duration-300" id="modalContent">
+        <!-- Success Icon with Animation -->
+        <div class="text-center pt-8 pb-4">
+        <div class="mx-auto w-20 h-20 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center mb-4 animate-bounce">
+            <i class="fas fa-check text-white text-3xl"></i>
+        </div>
+        <div class="w-16 h-1 bg-gradient-to-r from-green-400 to-green-600 mx-auto rounded-full mb-4"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="px-8 pb-8">
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-2">Pemesanan Berhasil!</h2>
+        <p class="text-gray-600 text-center mb-6">Tiket Anda telah berhasil dipesan.</p>
+        
+        <!-- Booking Summary -->
+        <div class="bg-green-50 rounded-xl p-4 mb-6">
+            <h3 class="font-semibold text-green-800 mb-3 flex items-center">
+            <i class="fas fa-ticket-alt mr-2"></i>
+            Detail Pemesanan
+            </h3>
+            <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-600">Kode Booking:</span>
+                <span class="font-semibold text-green-800" id="bookingCode">-</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Bus:</span>
+                <span class="font-semibold">DAMRI - Business 2+2</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Rute:</span>
+                <span class="font-semibold" id="selectedRoute">-</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Tanggal:</span>
+                <span class="font-semibold" id="selectedDate">-</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Waktu:</span>
+                <span class="font-semibold" id="selectedTime">-</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Jumlah Kursi:</span>
+                <span class="font-semibold" id="selectedSeats">-</span>
+            </div>
+            <hr class="border-green-200 my-2">
+            <div class="flex justify-between">
+                <span class="text-gray-600">Total Bayar:</span>
+                <span class="font-bold text-green-800 text-lg" id="finalTotal">-</span>
+            </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-3">
+            <button id="closeModal" class="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 shadow-lg">
+            Tutup
+            </button>
+        </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="absolute top-4 right-4">
+        <div class="w-3 h-3 bg-green-400 rounded-full opacity-60"></div>
+        </div>
+        <div class="absolute top-8 right-8">
+        <div class="w-2 h-2 bg-green-300 rounded-full opacity-40"></div>
+        </div>
+        <div class="absolute bottom-8 left-4">
+        <div class="w-4 h-4 bg-green-200 rounded-full opacity-30"></div>
+        </div>
+    </div>
+    </div>
+
+
   <?php include_once "components/footer.php"; ?>
 
   <script>
@@ -305,39 +424,7 @@
 
     seatCountInput.addEventListener('change', updatePrice);
 
-    // Form submission
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Basic validation
-      const route = document.getElementById('route').value;
-      const departureDate = document.getElementById('departure_date').value;
-      const departureTime = document.getElementById('departure_time').value;
-      const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
-
-      if (!route) {
-        alert('Silakan pilih rute perjalanan');
-        return;
-      }
-      
-      if (!departureDate) {
-        alert('Silakan pilih tanggal keberangkatan');
-        return;
-      }
-      
-      if (!departureTime) {
-        alert('Silakan pilih waktu keberangkatan');
-        return;
-      }
-      
-      if (!paymentMethod) {
-        alert('Silakan pilih metode pembayaran');
-        return;
-      }
-
-      // Redirect to payment page
-      window.location.href = 'pembayaran.php?bus=damri&seats=' + seatCountInput.value + '&total=' + ((pricePerSeat * parseInt(seatCountInput.value)) + adminFee) + '&method=' + paymentMethod.value;
-    });
+ 
 
     // Animation on scroll
     window.addEventListener('scroll', () => {
@@ -351,6 +438,159 @@
         }
       });
     });
+    // Success Modal Functions
+function generateBookingCode() {
+  return 'SGB' + Date.now().toString().slice(-8);
+}
+
+function formatRouteText(value) {
+  const routes = {
+    'sukarame-cawang': 'Sukarame → Cawang',
+    'cawang-sukarame': 'Cawang → Sukarame',
+    'sukarame-jakarta': 'Sukarame → Jakarta Pusat',
+    'jakarta-sukarame': 'Jakarta Pusat → Sukarame'
+  };
+  return routes[value] || value;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  return date.toLocaleDateString('id-ID', options);
+}
+
+function showSuccessModal(formData) {
+  const modal = document.getElementById('successModal');
+  const modalContent = document.getElementById('modalContent');
+  
+  // Generate booking code
+  const bookingCode = generateBookingCode();
+  
+  // Fill modal with booking data
+  document.getElementById('bookingCode').textContent = bookingCode;
+  document.getElementById('selectedRoute').textContent = formatRouteText(formData.route);
+  document.getElementById('selectedDate').textContent = formatDate(formData.departureDate);
+  document.getElementById('selectedTime').textContent = formData.departureTime + ' WIB';
+  document.getElementById('selectedSeats').textContent = formData.seatCount + ' Kursi';
+  document.getElementById('finalTotal').textContent = 'Rp ' + formData.totalPrice.toLocaleString('id-ID');
+  
+  // Show modal with animation
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  
+  setTimeout(() => {
+    modalContent.classList.add('modal-enter');
+    modalContent.classList.remove('scale-95');
+    modalContent.classList.add('scale-100');
+  }, 10);
+  
+  // Add confetti effect
+  createConfetti();
+  
+  // Store booking data for payment redirect
+  sessionStorage.setItem('bookingData', JSON.stringify({
+    ...formData,
+    bookingCode: bookingCode
+  }));
+}
+
+function hideSuccessModal() {
+  const modal = document.getElementById('successModal');
+  const modalContent = document.getElementById('modalContent');
+  
+  modalContent.classList.remove('scale-100');
+  modalContent.classList.add('scale-95');
+  
+  setTimeout(() => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    modalContent.classList.remove('modal-enter');
+  }, 300);
+}
+
+function createConfetti() {
+  const colors = ['#10b981', '#059669', '#34d399', '#6ee7b7'];
+  const confettiContainer = document.body;
+  
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 2 + 's';
+      confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      
+      confettiContainer.appendChild(confetti);
+      
+      setTimeout(() => {
+        confetti.remove();
+      }, 5000);
+    }, i * 100);
+  }
+}
+
+// Modal Event Listeners
+document.getElementById('closeModal').addEventListener('click', hideSuccessModal);
+
+
+// Close modal when clicking outside
+document.getElementById('successModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    hideSuccessModal();
+  }
+});
+
+// MODIFIKASI FORM SUBMISSION - Ganti bagian form submission yang sudah ada dengan ini:
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Basic validation
+  const route = document.getElementById('route').value;
+  const departureDate = document.getElementById('departure_date').value;
+  const departureTime = document.getElementById('departure_time').value;
+  const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+  const seatCount = parseInt(seatCountInput.value);
+
+  if (!route) {
+    alert('Silakan pilih rute perjalanan');
+    return;
+  }
+  
+  if (!departureDate) {
+    alert('Silakan pilih tanggal keberangkatan');
+    return;
+  }
+  
+  if (!departureTime) {
+    alert('Silakan pilih waktu keberangkatan');
+    return;
+  }
+  
+  if (!paymentMethod) {
+    alert('Silakan pilih metode pembayaran');
+    return;
+  }
+
+  // Prepare form data
+  const formData = {
+    route: route,
+    departureDate: departureDate,
+    departureTime: departureTime,
+    seatCount: seatCount,
+    paymentMethod: paymentMethod.value,
+    totalPrice: (pricePerSeat * seatCount) + adminFee
+  };
+
+  // Show success modal instead of direct redirect
+  showSuccessModal(formData);
+});
+
   </script>
 </body>
 </html>

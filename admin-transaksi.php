@@ -242,7 +242,6 @@
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pemesan</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Telepon</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Alamat</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Bus</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Rute</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
@@ -349,7 +348,6 @@
                 id: 1,
                 nama_pemesan: "Ahmad Setiawan",
                 telepon: "08123456789",
-                alamat: "Jl. Merdeka No. 123, Jakarta",
                 bus: "Sinar Jaya Express",
                 rute: "Jakarta - Bandung",
                 tanggal: "2024-12-25",
@@ -361,7 +359,6 @@
                 id: 2,
                 nama_pemesan: "Siti Nurhaliza",
                 telepon: "08567891234",
-                alamat: "Jl. Sudirman No. 456, Surabaya",
                 bus: "Harapan Jaya",
                 rute: "Surabaya - Yogyakarta",
                 tanggal: "2024-12-26",
@@ -373,7 +370,6 @@
                 id: 3,
                 nama_pemesan: "Budi Prasetyo",
                 telepon: "08912345678",
-                alamat: "Jl. Gatot Subroto No. 789, Medan",
                 bus: "Primajasa",
                 rute: "Medan - Padang",
                 tanggal: "2024-12-27",
@@ -385,7 +381,6 @@
                 id: 4,
                 nama_pemesan: "Dewi Lestari",
                 telepon: "",
-                alamat: "Jl. Diponegoro No. 321, Semarang",
                 bus: "Sinar Jaya Express",
                 rute: "Semarang - Solo",
                 tanggal: "2024-12-28",
@@ -397,7 +392,6 @@
                 id: 5,
                 nama_pemesan: "Rudi Hermawan",
                 telepon: "08345678912",
-                alamat: "Jl. Ahmad Yani No. 654, Malang",
                 bus: "Harapan Jaya",
                 rute: "Malang - Blitar",
                 tanggal: "2024-12-29",
@@ -482,9 +476,6 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${pemesanan.telepon || '-'}
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs">
-                        <div class="truncate" title="${pemesanan.alamat}">${pemesanan.alamat}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${pemesanan.bus}
@@ -590,7 +581,6 @@
             const filteredData = pemesananData.filter(pemesanan => 
                 pemesanan.nama_pemesan.toLowerCase().includes(searchTerm) ||
                 pemesanan.telepon.toLowerCase().includes(searchTerm) ||
-                pemesanan.alamat.toLowerCase().includes(searchTerm) ||
                 pemesanan.bus.toLowerCase().includes(searchTerm) ||
                 pemesanan.rute.toLowerCase().includes(searchTerm)
             );
@@ -617,9 +607,6 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${pemesanan.telepon || '-'}
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs">
-                        <div class="truncate" title="${pemesanan.alamat}">${pemesanan.alamat}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${pemesanan.bus}

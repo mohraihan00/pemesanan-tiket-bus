@@ -1,5 +1,3 @@
-ip klo halaman berandamu diubah jadi kaya gini setuju ngga? biar agak berisi dikit
-
 <?php /* beranda.php */ ?>
 <!DOCTYPE html>
 <html lang="id">

@@ -1,18 +1,90 @@
 <?php
+
 include 'koneksi.php';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
-    $nama = $_POST['nama_bus'];
+
+include 'koneksi.php';
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+    $stmt = $conn->prepare("DELETE FROM bus WHERE id_bus = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    echo "<script>alert('Data bus berhasil dihapus!'); window.location.href='admin-bus.php';</script>";
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_bus = isset($_POST['id_bus']) && !empty($_POST['id_bus']) ? $_POST['id_bus'] : null;
+    $nama_bus = $_POST['nama_bus'];
     $kelas = $_POST['kelas'];
     $kapasitas = $_POST['kapasitas'];
     $jam1 = $_POST['jam_berangkat'];
     $jam2 = $_POST['jam_berangkat2'];
     $harga = $_POST['harga'];
     $fasilitas = $_POST['fasilitas'];
-    
-    $stmt = $conn->prepare("INSERT INTO bus (nama_bus, kelas, kapasitas, jam_berangkat, jam_berangkat2, harga, fasilitas, foto) VALUES (?, ?, ?, ?, ?, ?, ?, 'default.jpg')");
-    $stmt->bind_param("ssissis", $nama, $kelas, $kapasitas, $jam1, $jam2, $harga, $fasilitas);
-    $stmt->execute();
-    echo "<script>alert('Data ditambahkan!'); window.location.href='admin-bus.php';</script>";
+
+    // Handle file upload
+    $fotoPath = null;
+    if (isset($_FILES["fotoBus"]) && $_FILES["fotoBus"]["error"] == 0) {
+        $uploadDir = 'uploads/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        $fotoNama = basename($_FILES["fotoBus"]["name"]);
+        $fotoPath = $uploadDir . time() . '_' . $fotoNama;
+        
+        $uploadOk = 1;
+        $imageFileType = strtolower(pathinfo($fotoPath, PATHINFO_EXTENSION));
+        $check = getimagesize($_FILES["fotoBus"]["tmp_name"]);
+        
+        if ($check === false || $_FILES["fotoBus"]["size"] > 2000000 || !in_array($imageFileType, ['jpg', 'jpeg', 'png'])) {
+            $uploadOk = 0;
+            echo "<script>alert('Gagal upload gambar: Pastikan file adalah JPG/PNG dan ukurannya < 2MB');</script>";
+        }
+        
+        if ($uploadOk == 0) {
+            echo "<script>alert('File tidak dapat diupload.');</script>";
+        } else {
+            if (!move_uploaded_file($_FILES["fotoBus"]["tmp_name"], $fotoPath)) {
+                echo "<script>alert('Gagal memindahkan file.');</script>";
+                $fotoPath = null;
+            }
+        }
+    }
+
+    // Execute INSERT or UPDATE
+    if ($id_bus) {
+        // UPDATE operation
+        if ($fotoPath) {
+            // Update dengan foto baru
+            $stmt = $conn->prepare("UPDATE bus SET nama_bus=?, kelas=?, kapasitas=?, jam_berangkat=?, jam_berangkat2=?, harga=?, fasilitas=?, foto=? WHERE id_bus=?");
+            $stmt->bind_param("ssississi", $nama_bus, $kelas, $kapasitas, $jam1, $jam2, $harga, $fasilitas, $fotoPath, $id_bus);
+        } else {
+            // Update tanpa mengubah foto
+            $stmt = $conn->prepare("UPDATE bus SET nama_bus=?, kelas=?, kapasitas=?, jam_berangkat=?, jam_berangkat2=?, harga=?, fasilitas=? WHERE id_bus=?");
+            $stmt->bind_param("ssisissi", $nama_bus, $kelas, $kapasitas, $jam1, $jam2, $harga, $fasilitas, $id_bus);
+        }
+        
+        if ($stmt->execute()) {
+            echo "<script>alert('Data bus berhasil diupdate!'); window.location.href='admin-bus.php';</script>";
+        } else {
+            echo "<script>alert('Gagal mengupdate data: " . $conn->error . "');</script>";
+        }
+    } else {
+        // INSERT operation
+        if ($fotoPath) {
+            $stmt = $conn->prepare("INSERT INTO bus (nama_bus, kelas, kapasitas, jam_berangkat, jam_berangkat2, harga, fasilitas, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssississ", $nama_bus, $kelas, $kapasitas, $jam1, $jam2, $harga, $fasilitas, $fotoPath);
+        } else {
+            echo "<script>alert('Foto bus harus diupload!');</script>";
+            exit;
+        }
+        
+        if ($stmt->execute()) {
+            echo "<script>alert('Data bus berhasil ditambahkan!'); window.location.href='admin-bus.php';</script>";
+        } else {
+            echo "<script>alert('Gagal menambahkan data: " . $conn->error . "');</script>";
+        }
+    }
 }
 
 ?>
@@ -101,13 +173,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
                 <p class="text-gray-400 text-xs uppercase tracking-wider font-semibold">Menu Utama</p>
             </div>
             
-            <a href="#" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200" onclick="showDashboard()">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v14l11-7z"></path>
-                </svg>
-                Dashboard
-            </a>
             
             <a href="#" class="flex items-center px-6 py-3 text-white sidebar-active transition-all duration-200" onclick="showDataBus()">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,8 +264,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="busTableBody">
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
+<?php
+include 'koneksi.php';
+$result = mysqli_query($conn, "SELECT * FROM bus");
+$no = 1;
+while ($row = mysqli_fetch_assoc($result)) {
+    echo '<tr class="table-row hover:bg-gray-50 transition-colors duration-200">';
+    echo '<td class="px-6 py-4 text-sm text-gray-900">' . $no++ . '</td>';
+    echo '<td class="px-6 py-4 text-sm text-gray-900 font-medium">' . htmlspecialchars($row['nama_bus']) . '<div class="text-sm text-gray-500">' . htmlspecialchars($row['kelas']) . '</div></td>';
+    echo '<td class="px-6 py-4 text-sm text-gray-900">' . $row['kapasitas'] . ' orang</td>';
+    echo '<td class="px-6 py-4 text-sm text-gray-900">' . $row['jam_berangkat'] . ' & ' . $row['jam_berangkat2'] . '</td>';
+    echo '<td class="px-6 py-4 text-sm text-gray-900">Rp ' . number_format($row['harga'], 0, ',', '.') . '</td>';
+    echo '<td class="px-6 py-4 text-sm text-gray-900">' . htmlspecialchars($row['fasilitas']) . '</td>';
+    echo '<td class="px-6 py-4 text-sm text-gray-900"><img src="' . htmlspecialchars($row['foto']) . '" alt="Foto Bus" class="w-16 h-10 object-cover rounded border shadow-sm"></td>';
+    $id = $row['id_bus'];
+    echo '<td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+        <button onclick="editBus(' . $id . ')" class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded text-xs font-medium shadow-sm">Edit</button>
+        <a href="admin-bus.php?delete=' . $id . '" onclick="return confirm(\'Yakin ingin menghapus data ini?\')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium shadow-sm">Hapus</a>
+    </td>';
+
+    echo '</tr>';
+}
+?>
+</tbody>
+
                     </table>
                 </div>
 
@@ -238,124 +325,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
                 </div>
             </div>
 
-            <!-- Modal Body -->
-            <form class="p-6" id="busForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="id_bus" id="idBus">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Bus *</label>
-                        <input type="text" name="nama_bus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="namaBus" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kelas Bus *</label>
-                        <select name="kelas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kelasBus" required>
-                            <option value="">Pilih Kelas</option>
-                            <option value="Ekonomi">Ekonomi</option>
-                            <option value="Bisnis">Bisnis</option>
-                            <option value="Eksekutif">Eksekutif</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kapasitas Penumpang *</label>
-                        <input type="number" name="kapasitas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kapasitas" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Berangkat *</label>
-                        <input type="time" name="jam_berangkat" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Berangkat2 *</label>
-                        <input type="time" name="jam_berangkat2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat2" required>
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Tiket (Rp) *</label>
-                        <input type="number" name="harga" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="hargaTiket" required>
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Fasilitas</label>
-                        <textarea name="fasilitas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" id="fasilitas" placeholder="AC, WiFi, Toilet, dll..."></textarea>
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Foto Bus</label>
-                        <input type="file" name="fotBus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="fotoBus" accept="image/*">
-                        <p class="text-xs text-gray-500 mt-1">Upload foto bus (JPG, PNG, max 2MB)</p>
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
-                    <button type="button" class="px-6 py-3 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition-colors duration-200" onclick="closeModal()">
-                        Batal
-                    </button>
-                    <button type="submit" class="btn-primary text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200">
-                        <span id="submitText">Simpan Data</span>
-                    </button>
-                </div>
-            </form>
+<form class="p-6" id="busForm" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="id_bus" id="idBus">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Bus *</label>
+            <input type="text" name="nama_bus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="namaBus" required>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Kelas Bus *</label>
+            <select name="kelas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kelasBus" required>
+                <option value="">Pilih Kelas</option>
+                <option value="Ekonomi">Ekonomi</option>
+                <option value="Bisnis">Bisnis</option>
+                <option value="Eksekutif">Eksekutif</option>
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Kapasitas Penumpang *</label>
+            <input type="number" name="kapasitas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="kapasitas" required>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Berangkat 1 *</label>
+            <input type="time" name="jam_berangkat" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat" required>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Jam Berangkat 2 *</label>
+            <input type="time" name="jam_berangkat2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="jamBerangkat2" required>
+        </div>
+        
+        <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Tiket (Rp) *</label>
+            <input type="number" name="harga" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="hargaTiket" required>
+        </div>
+        
+        <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Fasilitas</label>
+            <textarea name="fasilitas" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" id="fasilitas" placeholder="AC, WiFi, Toilet, dll..."></textarea>
+        </div>
+        
+        <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Foto Bus</label>
+            <input type="file" name="fotoBus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="fotoBus" accept="image/*">
+            <p class="text-xs text-gray-500 mt-1">Upload foto bus (JPG, PNG, max 2MB). Kosongkan jika tidak ingin mengubah foto.</p>
         </div>
     </div>
 
-    <?php
-    include 'koneksi.php';
-    $result = mysqli_query($conn, "SELECT * FROM bus");
-    $busData = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $busData[] = $row;
-    }
-    ?>
-    <script>
-        let busData = <?= json_encode($busData); ?>;
-    </script>
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
+        <button type="button" class="px-6 py-3 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition-colors duration-200" onclick="closeModal()">
+            Batal
+        </button>
+        <button type="submit" class="btn-primary text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+            <span id="submitText">Simpan Data</span>
+        </button>
+    </div>
+</form>
 
     <script>
         // Data dummy untuk demonstrasi (dalam implementasi nyata akan dari MySQL)
-        let busData = [
-            {
-                id: 1,
-                nama_bus: "Sinar Jaya Express",
-                kelas: "Eksekutif",
-                kapasitas: 45,
-                jam_berangkat: "06:00",
-                jam_berangkat2: "14:00",
-                harga: 250000,
-                fasilitas: "AC, WiFi, Toilet, Snack, Selimut",
-                foto: "images/sinarjaya.jpg"
-            },
-            {
-                id: 2,
-                nama_bus: "Harapan Jaya",
-                kelas: "Bisnis",
-                kapasitas: 40,
-                jam_berangkat: "08:30",
-                jam_berangkat2: "16:30",
-                harga: 180000,
-                fasilitas: "AC, WiFi, Charging Port",
-                foto: "images/bushandoyo.jpg"
-            },
-            {
-                id: 3,
-                nama_bus: "Primajasa",
-                kelas: "Ekonomi",
-                kapasitas: 50,
-                jam_berangkat: "10:00",
-                jam_berangkat2: "18:00",
-                harga: 120000,
-                fasilitas: "AC, Musik",
-                foto: "https://via.placeholder.com/80x50/059669/FFFFFF?text=Bus+3"
-            }
-        ];
+      let busData = <?php
+    mysqli_data_seek($result, 0); // Kembali ke awal result set
+    $rows = [];
+    while ($r = mysqli_fetch_assoc($result)) {
+        $rows[] = $r;
+    }
+    echo json_encode($rows, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+?>;
 
         let currentPage = 1;
         let recordsPerPage = 10;
         let currentEditId = null;
 
+        
         // Format currency
         function formatCurrency(amount) {
             return new Intl.NumberFormat('id-ID', {
@@ -420,7 +466,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
                         ${bus.kapasitas} orang
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${bus.jam_berangkat} - ${bus.jam_berangkat2}
+                        ${bus.jam_berangkat.slice(0,5)} & ${bus.jam_berangkat2.slice(0,5)}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${formatCurrency(bus.harga)}
@@ -511,44 +557,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
         }
 
         // Edit bus
-        function editBus(id) {
-            const bus = busData.find(bus => bus.id_bus === id);
-            if (bus) {
-                currentEditId = id;
-                const modalTitle = document.getElementById('modalTitle');
-                const submitText = document.getElementById('submitText');
-                
-                if (modalTitle) modalTitle.textContent = 'Edit Data Bus';
-                if (submitText) submitText.textContent = 'Update Data';
-                
-                // Fill form
-                const fields = {
-                    'namaBus': bus.nama_bus,
-                    'kelasBus': bus.kelas,
-                    'kapasitas': bus.kapasitas,
-                    'jamBerangkat': bus.jam_berangkat,
-                    'jamBerangkat2': bus.jam_berangkat2,
-                    'hargaTiket': bus.harga,
-                    'fasilitas': bus.fasilitas
-                };
-                
-                Object.keys(fields).forEach(fieldId => {
-                    const field = document.getElementById(fieldId);
-                    if (field) field.value = fields[fieldId];
-                });
-                
-                const modal = document.getElementById('dataModal');
-                if (modal) modal.classList.add('show');
+ function editBus(id) {
+    // Ambil data bus dari server
+    fetch('get_bus_data.php?id=' + id)
+        .then(response => response.json())
+        .then(bus => {
+            if (bus.error) {
+                alert('Error: ' + bus.error);
+                return;
             }
-        }
+            
+            currentEditId = id;
+            const modalTitle = document.getElementById('modalTitle');
+            const submitText = document.getElementById('submitText');
+            
+            if (modalTitle) modalTitle.textContent = 'Edit Data Bus';
+            if (submitText) submitText.textContent = 'Update Data';
+            
+            // Fill form dengan data dari database
+            document.getElementById('idBus').value = bus.id_bus;
+            document.getElementById('namaBus').value = bus.nama_bus;
+            document.getElementById('kelasBus').value = bus.kelas;
+            document.getElementById('kapasitas').value = bus.kapasitas;
+            document.getElementById('jamBerangkat').value = bus.jam_berangkat;
+            document.getElementById('jamBerangkat2').value = bus.jam_berangkat2;
+            document.getElementById('hargaTiket').value = bus.harga;
+            document.getElementById('fasilitas').value = bus.fasilitas;
+            
+            // Foto tidak perlu diisi karena opsional saat edit
+            document.getElementById('fotoBus').removeAttribute('required');
+            
+            const modal = document.getElementById('dataModal');
+            if (modal) modal.classList.add('show');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal mengambil data bus');
+        });
+}
+
+// Modifikasi showTambahModal untuk reset form
+function showTambahModal() {
+    currentEditId = null;
+    const modal = document.getElementById('dataModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitText = document.getElementById('submitText');
+    const busForm = document.getElementById('busForm');
+    
+    if (modalTitle) modalTitle.textContent = 'Tambah Data Bus';
+    if (submitText) submitText.textContent = 'Simpan Data';
+    if (busForm) busForm.reset();
+    
+    // Reset required attribute untuk foto
+    document.getElementById('fotoBus').setAttribute('required', 'required');
+    document.getElementById('idBus').value = '';
+    
+    if (modal) modal.classList.add('show');
+}
 
         // Delete bus
         function deleteBus(id) {
-            if (confirm('Yakin ingin hapus data ini?')) {
-                window.location.href = `admin-bus.php?delete=${id}`;
+            if (confirm('Apakah Anda yakin ingin menghapus data bus ini?')) {
+                busData = busData.filter(bus => bus.id !== id);
+                renderTable();
+                alert('Data bus berhasil dihapus!');
             }
         }
-
 
         // Close modal
         function closeModal() {
@@ -560,7 +634,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
 
         // Validate form
         function validateForm() {
-            const requiredFields = ['namaBus', 'kelasBus', 'kapasitas', 'jamBerangkat', 'jamBerangkat2', 'hargaTiket'];
+            const requiredFields = ['namaBus', 'kelasBus', 'kapasitas', 'jamBerangkat', 'JamBerangkat2', 'hargaTiket'];
             let isValid = true;
             
             requiredFields.forEach(fieldId => {
@@ -583,45 +657,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nama_bus'])) {
             renderTable();
             
             // Handle form submission
-            const busForm = document.getElementById('busForm');
-            if (busForm) {
-                busForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (!validateForm()) {
-                        alert('Mohon lengkapi semua field yang wajib diisi!');
-                        return;
-                    }
-                    
-                    const formData = {
-                        nama_bus: document.getElementById('namaBus').value,
-                        kelas: document.getElementById('kelasBus').value,
-                        kapasitas: parseInt(document.getElementById('kapasitas').value),
-                        jam_berangkat: document.getElementById('jamBerangkat').value,
-                        jam_berangkat2: document.getElementById('jamBerangkat2').value,
-                        harga: parseInt(document.getElementById('hargaTiket').value),
-                        fasilitas: document.getElementById('fasilitas').value,
-                        foto: "https://via.placeholder.com/80x50/DC2626/FFFFFF?text=Bus+" + Math.floor(Math.random() * 100)
-                    };
-                    
-                    if (currentEditId) {
-                        // Update existing data
-                        const index = busData.findIndex(bus => bus.id_bus === currentEditId);
-                        if (index !== -1) {
-                            busData[index] = { ...busData[index], ...formData };
-                            alert('Data bus berhasil diupdate!');
-                        }
-                    } else {
-                        // Add new data
-                        const newId = Math.max(...busData.map(bus => bus.id_bus)) + 1;
-                        busData.push({ id: newId, ...formData });
-                        alert('Data bus berhasil ditambahkan!');
-                    }
-                    
-                    renderTable();
-                    closeModal();
-                });
-            }
+           
 
             // Search functionality
             const searchInput = document.getElementById('searchInput');

@@ -15,6 +15,15 @@
     .fade-in-up {
       animation: fadeInUp 1s ease-out forwards;
     }
+    .slide-in-left {
+      animation: slideInLeft 1s ease-out forwards;
+    }
+    .slide-in-right {
+      animation: slideInRight 1s ease-out forwards;
+    }
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }

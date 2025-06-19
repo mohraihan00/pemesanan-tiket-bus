@@ -11,10 +11,25 @@
 
     <!-- Desktop Menu -->
     <nav class="hidden md:flex space-x-6">
-      <a href="./pesan-tiket.php" class="text-gray-700 font-medium hover:text-green-700">Pesan Tiket</a>
-      <a href="./riwayat-pemesanan.php" class="text-gray-700 font-medium hover:text-green-700">Riwayat Pemesanan</a>
-      <a href="./kontak.php" class="text-gray-700 font-medium hover:text-green-700">Kontak</a>
-      <a href="./loginregister.php" class="text-red-600 font-medium hover:underline">Log Out</a>
+      <a href="./cari-bus.php"
+        class="relative hover-effect text-gray-700 font-medium transition-colors duration-300
+        after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[3px]
+        after:w-full after:origin-left after:scale-x-0 after:bg-green-600 after:transition-transform after:duration-500 hover:text-green-600 hover:after:scale-x-100">
+        Cari Bus
+      </a>
+
+      <a href="./riwayat-pemesanan.php" class="relative hover-effect text-gray-700 font-medium transition-colors duration-300
+        after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[3px]
+        after:w-full after:origin-left after:scale-x-0 after:bg-green-600 after:transition-transform after:duration-500 hover:text-green-600 hover:after:scale-x-100">
+        Riwayat Pemesanan
+      </a>
+
+      <a href="./bantuan.php" class="relative hover-effect text-gray-700 font-medium transition-colors duration-300
+        after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[3px]
+        after:w-full after:origin-left after:scale-x-0 after:bg-green-600 after:transition-transform after:duration-500 hover:text-green-600 hover:after:scale-x-100">
+        Pusat Bantuan
+      </a>
+    <a href="./loginregister.php" class="text-red-600 font-medium hover:underline">Log Out</a>
     </nav>
 
     <!-- Mobile Menu Button -->
@@ -31,7 +46,7 @@
     <ul class="flex flex-col px-6 py-4 space-y-4">
       <li><a href="./pesan-tiket.php" class="text-gray-700 hover:text-green-700">Pesan Tiket</a></li>
       <li><a href="./riwayat-pemesanan.php" class="text-gray-700 hover:text-green-700">Riwayat Pemesanan</a></li>
-      <li><a href="./kontak.php" class="text-gray-700 hover:text-green-700">Kontak</a></li>
+      <li><a href="./bantuan.php" class="text-gray-700 hover:text-green-700">Bantuan</a></li>
       <li><a href="./loginregister.php" class="text-red-600 hover:underline font-medium">Log Out</a></li>
     </ul>
   </div>
